@@ -13,13 +13,16 @@ class WeatherViewModel: ObservableObject {
     
     @Published var weather: WeatherModel?
     var cancellables = Set<AnyCancellable>()
+    var latitude, longitude: CLLocationDegrees
     
     init() {
-        getWeather()
+        self.latitude = 55.69466
+        self.longitude = 37.67645
+        getWeather(latitude: self.latitude, longitude: self.longitude)
     }
     
-    func getWeather() {
-        guard let url = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=a65e47c3105d4a0ab65161243252905&q=53.50,49.42&days=5&aqi=no&alerts=no") else { return }
+    func getWeather(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
+        guard let url = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=a65e47c3105d4a0ab65161243252905&q=\(latitude),\(longitude)&days=5&aqi=no&alerts=no") else { return }
         
         URLSession.shared.dataTaskPublisher(for: url)
             .tryMap(handleOutput)
