@@ -15,7 +15,22 @@ struct HomeView: View {
     @StateObject var locationManager = LocationManager()
     
     var body: some View {
-            
+        
+        if locationManager.authorizationStatus == .authorizedWhenInUse {
+            weatherViewBody
+                .task {
+                    viewModel.getWeather(latitude: locationManager.latitude, longitude: locationManager.longitude)
+                }
+        } else {
+            ProgressView()
+                .ignoresSafeArea()
+        }
+    }
+    
+}
+
+extension HomeView {
+    private var weatherViewBody: some View {
         ZStack {
             Image("background2")
                 .resizable()
@@ -26,7 +41,7 @@ struct HomeView: View {
                 VStack {
                     if let weather = viewModel.weather {
                         Text(weather.location?.name ?? "")
-                            .font(.system(size: 45))
+                            .font(.largeTitle)
                             .fontWeight(.bold)
                             .padding()
                             .colorInvert()
@@ -42,7 +57,7 @@ struct HomeView: View {
                             }
                             
                             Text((weather.current?.tempC ?? 0).roundDouble() + "°C")
-                                .font(.headline)
+                                .font(.system(size: 50))
                                 .fontWeight(.heavy)
                                 .colorInvert()
                             Text(weather.current?.condition?.text ?? "")
@@ -130,24 +145,14 @@ struct HomeView: View {
                 .cornerRadius(20)
                 .ignoresSafeArea()
                 
-                
-                
-                
-                
-//                LocationButton(.currentLocation) {
-//                    locationManager.requestLocation()
-//                    if let location = locationManager.location {
-//                        viewModel.getWeather(latitude: location.latitude, longitude: location.longitude)
-//                    }
-//                }
-//                .foregroundStyle(.white)
-//                .clipShape(RoundedRectangle(cornerRadius: 20))
             }
         }
         
+        
     }
-    
 }
+
+
 
 #Preview {
     HomeView()
