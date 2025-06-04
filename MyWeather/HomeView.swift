@@ -38,107 +38,10 @@ extension HomeView {
                 .ignoresSafeArea()
             VStack {
                 
-                VStack {
-                    if let weather = viewModel.weather {
-                        Text(weather.location?.name ?? "")
-                            .font(.largeTitle)
-                            .fontWeight(.bold)
-                            .padding()
-                            .colorInvert()
-                    }
-                    
-                    if let weather = viewModel.weather {
-                        VStack {
-                            AsyncImage(url: URL(string: "https:" + "\(weather.current?.condition?.icon ?? "")")) { image in
-                                image
-                            } placeholder: {
-                                ProgressView()
-                                    .frame(width: 64, height: 64)
-                            }
-                            
-                            Text((weather.current?.tempC ?? 0).roundDouble() + "°C")
-                                .font(.system(size: 50))
-                                .fontWeight(.heavy)
-                                .colorInvert()
-                            Text(weather.current?.condition?.text ?? "")
-                                .font(.headline)
-                                .fontWeight(.heavy)
-                                .colorInvert()
-                            Text("Wind: " + (weather.current?.windKph ?? 0).roundDouble() + " km/h")
-                                .font(.headline)
-                                .fontWeight(.heavy)
-                                .colorInvert()
-                            Text("Humidity: " + "\(weather.current?.humidity ?? 0)" + " %")
-                                .font(.headline)
-                                .fontWeight(.heavy)
-                                .colorInvert()
-                            
-                        }
-                        .padding()
-                        
-                    }
-                    
-                }
+                headerView
                 
-                ScrollView(.vertical, showsIndicators: false) {
-                    
-                    ForEach(viewModel.weather?.forecast?.forecastday ?? []) { weatherDay in
-                        HStack(alignment: .center) {
-                            if let date = weatherDay.date {
-                                if date == Date().stringFromDate() {
-                                    Text("Today")
-                                        .font(.headline)
-                                        .fontWeight(.heavy)
-                                        .colorInvert()
-                                        .frame(width: 100, alignment: .leading)
-                                        .padding(.horizontal, 30)
-                                } else {
-                                    Text("\((weatherDay.date ?? "").weekday())")
-                                        .font(.headline)
-                                        .fontWeight(.heavy)
-                                        .colorInvert()
-                                        .frame(width: 100, alignment: .leading)
-                                        .padding(.horizontal, 30)
-                                }
-                            }
-                            
-                            VStack {
-                                AsyncImage(url: URL(string: "https:" + "\(weatherDay.day?.condition?.icon ?? "")")) { image in
-                                    image
-                                } placeholder: {
-                                    ProgressView()
-                                        .frame(width: 64, height: 64)
-                                }
-                                
-                                Text((weatherDay.day?.avgtempC ?? 0).roundDouble() + "°C")
-                                    .font(.headline)
-                                    .fontWeight(.heavy)
-                                    .colorInvert()
-                                
-                            }
-                            .frame(width: 64)
-                            Spacer()
-                            VStack(alignment: .leading) {
-                                Text(weatherDay.day?.condition?.text ?? "")
-                                    .font(.headline)
-                                    .fontWeight(.heavy)
-                                    .colorInvert()
-                                Text("Wind: " + (weatherDay.day?.maxwindKph ?? 0).roundDouble() + " km/h")
-                                    .font(.headline)
-                                    .fontWeight(.heavy)
-                                    .colorInvert()
-                                Text("Humidity: " + "\(weatherDay.day?.avghumidity ?? 0)" + " %")
-                                    .font(.headline)
-                                    .fontWeight(.heavy)
-                                    .colorInvert()
-                            }
-                            .frame(width: 200, alignment: .leading)
-                            
-                        }
-                        .padding()
-                        Divider()
-                    }
-                    
+                ScrollView(.vertical, showsIndicators: false)  {
+                    weatherRowView
                 }
                 .frame(width: UIScreen.main.bounds.width)
                 .background(.ultraThinMaterial)
@@ -152,7 +55,114 @@ extension HomeView {
     }
 }
 
+extension HomeView {
+    private var headerView: some View {
+        VStack {
+            if let weather = viewModel.weather {
+                Text(weather.location?.name ?? "")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .padding()
+                    .colorInvert()
+            }
+            
+            if let weather = viewModel.weather {
+                VStack {
+                    AsyncImage(url: URL(string: "https:" + "\(weather.current?.condition?.icon ?? "")")) { image in
+                        image
+                    } placeholder: {
+                        ProgressView()
+                            .frame(width: 64, height: 64)
+                    }
+                    
+                    Text((weather.current?.tempC ?? 0).roundDouble() + "°C")
+                        .font(.system(size: 50))
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                    Text(weather.current?.condition?.text ?? "")
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                    Text("Wind: " + (weather.current?.windKph ?? 0).roundDouble() + " km/h")
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                    Text("Humidity: " + "\(weather.current?.humidity ?? 0)" + " %")
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                    
+                }
+                .padding()
+                
+            }
+            
+        }
+    }
+}
 
+extension HomeView {
+    private var weatherRowView: some View {
+        
+        ForEach(viewModel.weather?.forecast?.forecastday ?? []) { weatherDay in
+            HStack(alignment: .center) {
+                if let date = weatherDay.date {
+                    if date == Date().stringFromDate() {
+                        Text("Today")
+                            .font(.headline)
+                            .fontWeight(.heavy)
+                            .colorInvert()
+                            .frame(width: 100, alignment: .leading)
+                            .padding(.horizontal, 30)
+                    } else {
+                        Text("\((weatherDay.date ?? "").weekday())")
+                            .font(.headline)
+                            .fontWeight(.heavy)
+                            .colorInvert()
+                            .frame(width: 100, alignment: .leading)
+                            .padding(.horizontal, 30)
+                    }
+                }
+                
+                VStack {
+                    AsyncImage(url: URL(string: "https:" + "\(weatherDay.day?.condition?.icon ?? "")")) { image in
+                        image
+                    } placeholder: {
+                        ProgressView()
+                            .frame(width: 64, height: 64)
+                    }
+                    
+                    Text((weatherDay.day?.avgtempC ?? 0).roundDouble() + "°C")
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                    
+                }
+                .frame(width: 64)
+                Spacer()
+                VStack(alignment: .leading) {
+                    Text(weatherDay.day?.condition?.text ?? "")
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                    Text("Wind: " + (weatherDay.day?.maxwindKph ?? 0).roundDouble() + " km/h")
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                    Text("Humidity: " + "\(weatherDay.day?.avghumidity ?? 0)" + " %")
+                        .font(.headline)
+                        .fontWeight(.heavy)
+                        .colorInvert()
+                }
+                .frame(width: 200, alignment: .leading)
+                
+            }
+            .padding()
+            Divider()
+        }
+        
+    }
+}
 
 #Preview {
     HomeView()
